@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -10,9 +11,18 @@ import (
 )
 
 func main() {
-
+	connectionString := "postgres://baloo:junglebook@localhost:5432/lenslocked?sslmode=disable"
+	db, err := sql.Open("postgres", connectionString)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
 	todoController := &TodoController{
-		todos: make([]Todo, 0),
+		DB: db,
 	}
 
 	r := chi.NewRouter()
@@ -21,11 +31,11 @@ func main() {
 		w.Write([]byte("Server is up and running"))
 	})
 
-	r.Get("/todos", todoController.getTodosHandler)
-	r.Post("/todos", todoController.createTodoHandler)
-	r.Get("/todos/{id}", todoController.getTodoHandler)
-	r.Put("/todos/{id}", todoController.updateTodoHandler)
-	r.Delete("/todos/{id}", todoController.deleteTodoHandler)
+	r.Get("/todos", todoController.GetAllTodos)
+	r.Post("/todos", todoController.CreateTodo)
+	r.Get("/todos/{id}", todoController.GetTodoByID)
+	r.Put("/todos/{id}", todoController.UpdateTodoByID)
+	r.Delete("/todos/{id}", todoController.DeleteTodoByID)
 
 	fmt.Println("Server is listening on 8080")
 	http.ListenAndServe(":8080", r)
