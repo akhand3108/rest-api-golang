@@ -7,10 +7,10 @@ import (
 	"os"
 
 	controllers "github.com/akhand3108/restgo/Controllers"
+	_ "github.com/glebarez/go-sqlite"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -52,12 +52,16 @@ func main() {
 }
 
 func setupDB() *sql.DB {
-	connectionString := os.Getenv("DB_CONNECTION_STRING")
-	if connectionString == "" {
-		panic("DB_CONNECTION_STRING environment variable not set")
+	dbFile := os.Getenv("DB_CONNECTION_STRING")
+	if dbFile == "" {
+		dbFile = "database.db"
+		_, err := os.Create(dbFile)
+		if err != nil {
+			panic(err)
+		}
 	}
 
-	db, err := sql.Open("postgres", connectionString)
+	db, err := sql.Open("sqlite", dbFile)
 	if err != nil {
 		panic(err)
 	}
@@ -68,23 +72,25 @@ func setupDB() *sql.DB {
 
 	_, err = db.Exec(`
 	CREATE TABLE IF NOT EXISTS users (
-		id SERIAL PRIMARY KEY,
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		username VARCHAR(255) NOT NULL,
 		passwordhash VARCHAR(255) NOT NULL
 	)
-`)
+	`)
+
 	if err != nil {
 		panic(err)
 	}
 
 	_, err = db.Exec(`
 	CREATE TABLE IF NOT EXISTS todos (
-		id SERIAL PRIMARY KEY,
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		title VARCHAR(255) NOT NULL,
 		done BOOLEAN DEFAULT false,
 		user_id INT REFERENCES users(id)
 	)
-`)
+	`)
+
 	if err != nil {
 		panic(err)
 	}

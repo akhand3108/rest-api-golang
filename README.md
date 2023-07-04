@@ -1,6 +1,6 @@
 #  REST API with JWT Authentication and Todo Management
 
-This is a simple RESTful API implemented in Golang that provides authentication functionality along with CRUD operations for managing todos. It uses PostgreSQL as the database and JWT (JSON Web Tokens) for authentication.
+This is a simple RESTful API implemented in Golang that provides authentication functionality along with CRUD operations for managing todos. It uses SQLlite as the database and JWT (JSON Web Tokens) for authentication.
 
 ## Features
 
@@ -117,7 +117,7 @@ Note: The authenticated routes require a bearer token in the request headers. Pl
 The app depends on the following libraries:
 
 * `chi`: A web framework for Golang.
-* `postgresql`: A driver for the PostgreSQL database.
+* `jwt-go`: JWT in Golang
 
 ## Contributing
 

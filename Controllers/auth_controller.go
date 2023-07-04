@@ -56,7 +56,7 @@ func (ac *AuthController) Signin(w http.ResponseWriter, r *http.Request) {
 	token, err := ac.AuthService.Signin(&credentials)
 	if err != nil {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-		fmt.Printf("Error: %v", err)
+		fmt.Printf(" controller Error: %v", err)
 		return
 	}
 
